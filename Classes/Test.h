@@ -11,5 +11,7 @@ public:
 	CREATE_FUNC(Test);
 private:
 	ServerSocket* serverSocket;
+
+	void loginHandler(CCBuffer* buffer);
 };
 

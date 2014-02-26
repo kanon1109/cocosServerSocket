@@ -12,7 +12,10 @@ ServerSocket::~ServerSocket()
 void ServerSocket::onMessageReceived(CCBuffer& oBuffer)
 {
 	int id = oBuffer.readInt();
-	CCLOG("id = %d", id);
+	char protocol[33];
+	sprintf(protocol, "%d", id);
+	CCLOG("protocol = %s", protocol);
+	CCNotificationCenter::sharedNotificationCenter()->postNotification(protocol, &oBuffer);
 }
 
 void ServerSocket::onConnected()
@@ -97,6 +100,7 @@ void TimerNode::timeLoop(float dt)
 
 void TimerNode::start()
 {
+	//15ÃëÖØÁ¬
 	this->reconnentDelay = 15;
 	this->schedule(schedule_selector(TimerNode::timeLoop), 1.0f);
 }

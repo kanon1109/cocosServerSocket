@@ -44,7 +44,6 @@ public:
 	virtual void onDisconnected();
 	//捕获异常
 	virtual void onExceptionCaught(CCSocketStatus eStatus);
-
 	/**
 	* 初始化
 	* @param	ip		 服务端ip地址
