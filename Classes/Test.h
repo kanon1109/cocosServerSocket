@@ -1,7 +1,6 @@
 #pragma once
 #include "cocos2d.h"
 #include "net/ServerSocket.h"
-#include "net/Net.h"
 USING_NS_CC;
 class Test:public CCScene
 {

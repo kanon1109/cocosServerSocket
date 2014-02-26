@@ -10,7 +10,6 @@ Test::~Test(void)
 
 bool Test::init()
 {
-	this->serverSocket = new ServerSocket(this);
-	//Net::init(this->serverSocket);
+	ServerSocket::sharedDelegate()->connectServer("127.0.0.1", 8000, this);
 	return true;
 }
