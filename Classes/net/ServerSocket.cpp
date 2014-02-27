@@ -1,7 +1,7 @@
 #include "ServerSocket.h"
 ServerSocket::ServerSocket()
 {
-	
+	this->timerNode = NULL;
 }
 
 ServerSocket::~ServerSocket()
@@ -69,10 +69,11 @@ void ServerSocket::timeCompleteHandler()
 	this->connect();
 }
 
-void ServerSocket::send(unsigned int actionName, unsigned int type, ...)
+void ServerSocket::send(CCBuffer* pBuffer)
 {
-
+	CCNetDelegate::send(pBuffer);
 }
+
 
 TimerNode::TimerNode()
 {
@@ -85,7 +86,7 @@ TimerNode::~TimerNode()
 
 void TimerNode::timeLoop(float dt)
 {
-	CCLOG("timeLoop %d", this->reconnentDelay);
+	//CCLOG("timeLoop %d", this->reconnentDelay);
 	this->reconnentDelay--;
 	if (this->reconnentDelay <= 0)
 	{

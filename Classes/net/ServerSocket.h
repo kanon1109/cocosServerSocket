@@ -53,11 +53,8 @@ public:
 	void connectServer(const char* ip, unsigned short port, CCNode* parent);
 	/**
 	* 发送消息
-	* @param	actionName   业务大类
-	* @param	type		 大类中的具体业务类型
-	* @param	...     	 需要传给服务端的参数
 	*/
-	void send(unsigned int actionName, unsigned int type, ...);
+	virtual void send(CCBuffer* pBuffer);
 private:
 	//计时器node
 	TimerNode* timerNode;
