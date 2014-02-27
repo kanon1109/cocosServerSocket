@@ -1,12 +1,12 @@
 #include "ServerSocket.h"
 ServerSocket::ServerSocket()
 {
-	this->timerNode = NULL;
+	this->timer = NULL;
 }
 
 ServerSocket::~ServerSocket()
 {
-	this->timerNode->removeFromParentAndCleanup(true);
+	this->timer->removeFromParentAndCleanup(true);
 }
 
 void ServerSocket::onMessageReceived(CCBuffer& oBuffer)
@@ -26,13 +26,13 @@ void ServerSocket::onConnected()
 void ServerSocket::onConnectTimeout()
 {
 	CCLOG("connect timeout");
-	this->timerNode->start();
+	if (this->timer) this->timer->start();
 }
 
 void ServerSocket::onDisconnected()
 {
 	CCLOG("connect close");
-	this->timerNode->start();
+	if (this->timer) this->timer->start();
 }
 
 void ServerSocket::onExceptionCaught(CCSocketStatus eStatus)
@@ -43,7 +43,7 @@ void ServerSocket::onExceptionCaught(CCSocketStatus eStatus)
 		(int)eStatus == CCSocketStatus::eSocketDisconnected||
 		(int)eStatus == CCSocketStatus::eSocketIoError)
 	{
-		this->timerNode->start();
+		if (this->timer) this->timer->start();
 	}
 }
 
@@ -54,16 +54,16 @@ void ServerSocket::connectServer(const char* ip, unsigned short port, CCNode* pa
 	address.setPort(port);
 	this->setInetAddress(address);
 	//创建计时器
-	if(!this->timerNode) 
+	if (!this->timer)
 	{
-		this->timerNode = TimerNode::create();
-		this->timerNode->addEventListener(this, time_complete_selector(ServerSocket::timeCompleteHandler));
-		parent->addChild(this->timerNode);
+		this->timer = Timer::create(15000, 1);
+		this->timer->addEventListener(this, timer_selector(ServerSocket::timeCompleteHandler));
+		parent->addChild(this->timer);
 	}
 	this->connect();
 }
 
-void ServerSocket::timeCompleteHandler()
+void ServerSocket::timeCompleteHandler(Timer* timer)
 {
 	CCLOG("reconnect");
 	this->connect();
@@ -72,59 +72,4 @@ void ServerSocket::timeCompleteHandler()
 void ServerSocket::send(CCBuffer* pBuffer)
 {
 	CCNetDelegate::send(pBuffer);
-}
-
-
-TimerNode::TimerNode()
-{
-	
-}
-
-TimerNode::~TimerNode()
-{
-}
-
-void TimerNode::timeLoop(float dt)
-{
-	//CCLOG("timeLoop %d", this->reconnentDelay);
-	this->reconnentDelay--;
-	if (this->reconnentDelay <= 0)
-	{
-		this->reconnentDelay = 0;
-		if(this->target && this->callBackFunc)
-		{
-			(this->target->*callBackFunc)();
-		}
-		this->stop();
-	}
-}
-
-void TimerNode::start()
-{
-	//15秒重连
-	this->reconnentDelay = 15;
-	this->schedule(schedule_selector(TimerNode::timeLoop), 1.0f);
-}
-
-TimerNode* TimerNode::create()
-{
-	TimerNode* tn = new TimerNode();
-	if (tn && tn->init())
-	{
-		tn->autorelease();
-		return tn;
-	}
-	CC_SAFE_DELETE(tn);
-	return NULL;
-}
-
-void TimerNode::addEventListener( CCObject* target, SEL_TIME_COMPLETE_SELECTOR callBackFunc )
-{
-	this->callBackFunc = callBackFunc;
-	this->target = target;
-}
-
-void TimerNode::stop()
-{
-	this->unschedule(schedule_selector(TimerNode::timeLoop));
 }

@@ -3,31 +3,8 @@
 #define _SERVER_SOCKET_
 #include "cocos2d.h"
 #include "CocosNet/CCNetDelegate.h"
+#include "geckosCocos2dxUtils/utils/Timer.h"
 USING_NS_CC;
-//计时器回调函数类型
-typedef void (CCObject::*SEL_TIME_COMPLETE_SELECTOR)();
-#define time_complete_selector(_SELECTOR) (SEL_TIME_COMPLETE_SELECTOR)(&_SELECTOR)
-class TimerNode :public CCNode
-{
-public:
-	TimerNode();
-	~TimerNode();
-	static TimerNode* create();
-	void start();
-	void stop();
-	//监听函数
-	void addEventListener(CCObject* target, SEL_TIME_COMPLETE_SELECTOR callBackFunc);
-private:
-	//重链间隔
-	int reconnentDelay;
-	//计时器循环
-	void timeLoop(float dt);
-	//外部回调方法。
-	SEL_TIME_COMPLETE_SELECTOR callBackFunc;
-	//调用回调的目标指针
-	CCObject* target;
-};
-
 class ServerSocket :public CCNetDelegate
 {
 public:
@@ -57,7 +34,7 @@ public:
 	virtual void send(CCBuffer* pBuffer);
 private:
 	//计时器node
-	TimerNode* timerNode;
-	void timeCompleteHandler();
+	Timer* timer;
+	void timeCompleteHandler(Timer* timer);
 };
 #endif
